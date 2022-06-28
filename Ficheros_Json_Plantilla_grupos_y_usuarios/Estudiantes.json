@@ -1,0 +1,30 @@
+{
+    "users": [{
+            "email": "AAAAA@adsa.es",
+            "password": "AAAAA",
+            "first_name": "AA",
+            "last_name": "AAA"
+        },
+
+        {
+            "email": "student@email.es",
+            "password": "BBBBB",
+            "first_name": "BB",
+            "last_name": "BBB"
+        },
+
+        {
+            "email": "CCCCC@adsa.es",
+            "password": "CCCCC",
+            "first_name": "CC",
+            "last_name": "CCC"
+        },
+
+        {
+            "email": "student3@email.es",
+            "password": "DDDDD",
+            "first_name": "DD",
+            "last_name": "DDD"
+        }
+    ]
+}

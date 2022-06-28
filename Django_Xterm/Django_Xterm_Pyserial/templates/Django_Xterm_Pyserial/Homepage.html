@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Favicon -->
+    {% load static %}
+    <link rel="shortcut icon" href="{% static '/img/favicon.png' %}"/>
+    
+    <!-- CSS only -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+        integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static '/css/Homepage.css' %}"/>
+
+    <!-- JS, Popper.js, and jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+        integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+        crossorigin="anonymous"></script>
+    <script src="{% static '/js/Homepage.js' %}"></script>
+
+    <title>Control Panel</title>
+</head>
+
+<body style="overflow-x: hidden;">
+
+    <nav class="navbar navbar-expand-lg bg-dark navbar-dark sticky-top">
+        <a class="navbar-brand" href="{% url 'ControlPanel' %}">
+        <img src="{% static '/img/favicon.png' %}" alt="Term" style="width:40px;">
+        </a>
+
+        <h1 class="navbar-text" id="place">Control Panel</h1>
+
+        <div class="collapse navbar-collapse nav-group-buttons" id="collapsibleNavbar">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="links_nav" href="{% url 'ControlPanel' %}">Devices</a>
+                </li>
+                {% if user.is_professor %}
+                    <li class="nav-item">
+                        <li class="nav-item">
+                            <a class="links_nav" href="{% url 'Groups' %}">Groups</a>
+                        </li>
+                    <li class="nav-item">
+                        <li class="nav-item">
+                            <a class="links_nav" href="{% url 'Students' %}">Students</a>
+                        </li>
+                    </li>
+                {% endif %}
+            </ul>
+
+            <h4 class="navbar-text" id="w">Welcome, </h4>
+            
+            <div class="nav-item dropdown">
+                <h5 class="navbar-text" id="navbardrop" data-toggle="dropdown">
+                    {{ user.get_short_name }}
+                </h5>
+                <div id="dropdown-menu-u" class="dropdown-menu dropdown-menu-right">
+                    <div id = "night-user" class="custom-control custom-switch dropdown-item custom-control-right">
+                        <input type="checkbox" class="custom-control-input" id="darkSwitch" />
+                        <label class="custom-control-label" for="darkSwitch">Dark Mode</label>
+                    </div>
+                    <a id="password-button" class="btn-dropdown-u" href="{% url 'Password_Change' %}">Change Password</a>
+                    <a id="logout-button" class="btn-dropdown-u" href="{% url 'Logout' %}">Logout</a>
+                </div>
+            </div> 
+        </div>
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+    </nav>
+
+    {% if user.is_professor %}
+        <div class="after_navigator_buttons">
+            <div class="dropdown">
+                <button type="button" class="btn btn-dark dropdown-toggle" data-toggle="dropdown">
+                    Energy Control
+                </button>
+                <div id="dropdown-menu-ps" class="dropdown-menu"> 
+                    <button id="addpowerstrip-modal" class="btn btn-dark btn-dropdown-ps" onclick="Add_powestrip_modal()">Add Power Strip</button>
+                    {% if powstrps|length != 0 %}
+                        <button id="showallpowerstrip" class="btn btn-dark btn-dropdown-ps" target="popup" onclick="window.open({% url 'PowerStrips' %}, '_blank', 'resizable=1,width=1050, height=670')">Show Power Strips</button>
+                        <button id="deletepowerstrip-modal" class="btn btn-dark btn-dropdown-ps">Delete Power Strip</button>
+                    {% endif %}
+                </div>
+            </div>
+            {% if powstrps|length != 0 %}
+                <button type="submit" id="on_all" class="btn btn-dark">On</button>
+                <button type="submit" id="off_all" class="btn btn-dark">Off</button>
+            {% endif %}
+        </div>
+        <div id="loading-overlay">
+            <div class="loading-icon"></div>
+        </div>  
+    {% endif %}
+
+    <div id="Devices_Container" class="row justify-content-center">
+        {% if user.is_professor %}
+            {% if status|length == 0 %}
+                <h2 id="no_devices">No network devices detected using serial.</h2>
+            {% else %}
+                {% for state in status %}
+                    <div id="card_{{state.Device}}" class="card">
+
+                        <div id="head" class="card-header">
+                            <div class="row">
+                                <div class="col-10">
+                                    <p id="dev_{{state.Device}}">{{state.DeviceName}}.</p>
+                                </div>
+                                <div class="col-2 text-right">
+                                    {% if state.StatusDevice == "on" %}
+                                        <span id="on/off_{{state.Device}}" class="dot dot_green"></span>
+                                    {% elif state.StatusDevice == "off" %}
+                                        <span id="on/off_{{state.Device}}" class="dot dot_red"></span>
+                                    {% elif state.StatusDevice == None %}
+                                        <span id="on/off_{{state.Device}}" class="dot dot_grey"></span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="body" class="card-body">
+                            <p id="dev{{state.DeviceName}}">Connected to: {{state.Device}}</p>
+                            {% if powstrps|length != 0 %}
+                                <div style="margin-top: 5%;">
+                                    <p style="margin-bottom: 8px;">Choose power strip and socket:</p>
+                                    <div style="display: flex;">
+                                        <select class="custom-select cards-select-ps" id="ps_{{state.Device}}"> 
+                                            {% if state.PowerStrip != null %}
+                                                <option value={{state.PowerStrip.Name}} selected>{{state.PowerStrip.Name}}</option>
+                                                <option value="None"> None </option>
+                                            {% else %}
+                                                <option value="None" selected>No Power Strip </option>
+                                            {% endif %}
+
+                                            {% for pow in powstrps %}
+                                                {% if pow.Name != state.PowerStrip.Name %}
+                                                    <option value={{pow.Name}}> {{pow.Name}} </option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>                                                     
+                                        {% if state.PowerStrip != null %}
+                                            <select class="custom-select cards-select-sk" id="pssockets_{{state.Device}}">
+                                                {% if state.Socket != null %}
+                                                    <option value={{ state.Socket }} selected> {{ state.Socket}} </option>
+                                                    <option value="None"> None </option>
+                                                {% else %}
+                                                    <option value="None" selected> Socket </option>
+                                                {% endif %}
+
+
+                                                {% with ''|center:state.PowerStrip.Sockets as range %}
+                                                    {% for _ in range %}
+                                                        {% if state.Socket != forloop.counter %}
+                                                            <option value={{ forloop.counter }}> {{ forloop.counter }} </option>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endwith %}
+                                            </select>
+                                        {% endif %} 
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div id="foot" class="card-footer text-center">
+                            <button id="con_butt_{{state.Device}}" class="btn btn-success connect_button">Connect</button>
+                            {% if state.Socket != null %}
+                                <button id="on_off_single_{{state.Device}}" class="btn btn-primary on_off_single">On/Off</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% else %}
+            {% if status|length == 0 %}
+                <h2 style="color: red; margin: 20px; font-size: 2.5vw;">You do not belong to any group or your group has not a network device assigned. </h2>
+            {% else %}
+                {% for state in status %}
+                    <div class="card" style="margin: 20px;">
+
+                        <div id="head" class="card-header">
+                            <div class="row">
+                                <div class="col-10">
+                                    <p id="dev_{{state.Device}}">{{state.DeviceName}}.</p>
+                                </div>
+                                <div class="col-2 text-right">
+                                    {% if state.StatusDevice == "on" %} 
+                                        <span id="on/off_{{state.Device}}" class="dot dot_green"></span>
+                                    {% elif state.StatusDevice == "off" %}
+                                        <span id="on/off_{{state.Device}}" class="dot dot_red"></span>
+                                    {% elif state.StatusDevice == None %}
+                                        <span id="on/off_{{state.Device}}" class="dot dot_grey"></span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="body" class="card-body">
+                            <p id="dev{{state.DeviceName}}">Connected to: {{state.Device}}</p>
+                        </div>
+
+                        <div id="foot" class="card-footer text-center">
+                            <button id="con_butt_{{state.Device}}" class="btn btn-success connect_button" onclick="Connect(this)" style="float: initial;">Connect</button>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endif %}
+    </div>
+
+
+    <button onclick="topFunction()" id="to-top" title="Go to top">Top</button>
+
+    <div class="modal fade" id="AddPowerstipModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form id="AddPowerstip" method="POST">
+
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="ModalLabelAPs">New Power Strip</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span id="cerrar-modal" aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div>
+                            <p>Name: </p>
+                            <input class="form-control" type="text" id="name" name="name"  minlength="1" maxlength="12" autocomplete="off" required 
+                                oninvalid="this.setCustomValidity('The parameter was not accepted or the field was left blank.')"  oninput="this.setCustomValidity('')"/>
+                        </div>
+                        <div id="input-modal">  
+                            <p id="p-modal">Number of sockets: </p>
+                            <input class="form-control" type="number" id="sockets" name="sockets" min="1" max="99" aria-describedby="databitsHelpInline" autocomplete="off" required 
+                                oninvalid="this.setCustomValidity('The parameter was not accepted or the field was left blank.')"  oninput="this.setCustomValidity('')"/>
+                            <small id="databitsHelpInline" class="text-muted">Possible values: 1, 2, 3, 4, ..., 99.</small>
+                        </div>
+                        <div id="input-modal" class="row">
+                            <p id="p-modal" style="padding-left: 16px;"> Wi-fi: </p>
+                            <input class="form-control checkbox-modal-addps" type="checkbox" id="type_connect" name="type_connect" aria-describedby="stopbitsHelpInline"/>
+                            <small id="stopbitsHelpInline " class="text-muted exp-checkbox-modal-addps">Type of the connection with the power strip. Check if it has Wi-Fi.</small>
+                        </div>
+                        <div id="input-modal" class="ip_powerstrip">
+                            <p id="p-modal">Ip: </p>  
+                            <input class="form-control" type="text" id="ip_powerstrip" name="ip_powerstrip" minlength="7" maxlength="15" pattern="^((25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)(\.|$)){4}\b" aria-describedby="databitsHelpInline" autocomplete="off"
+                                oninvalid="this.setCustomValidity('The parameter was not accepted or the field was left blank.')"  oninput="this.setCustomValidity('')"/>
+                            <small id="databitsHelpInline" class="text-muted">Ip associated to the power strip.</small>
+                        </div>
+                        <div id="input-modal" class="ip_powerstrip">  
+                            <p id="p-modal">Pin: </p>
+                            <input class="form-control" type="text" id="pin" name="pin" minlength="6" maxlength="6" aria-describedby="databitsHelpInline" autocomplete="off"
+                                oninvalid="this.setCustomValidity('The parameter was not accepted or the field was left blank.')"  oninput="this.setCustomValidity('')"/>
+                            <small id="databitsHelpInline" class="text-muted">Pin located in the power strip.</small>
+                        </div>
+                        <div id="input-modal" class="device_powerstrip">
+                            <p id="p-modal">Connectd to: </p>
+                            <input class="form-control" type="text" id="device_powerstrip" name="device_powerstrip" pattern="^[\/][d][e][v][\/][t][t][y][U][S][B](0|[1-9][0-9]{0,2})$" aria-describedby="databitsHelpInline" autocomplete="off"
+                                oninvalid="this.setCustomValidity('The parameter was not accepted or the field was left blank.')"  oninput="this.setCustomValidity('')"/>
+                            <small id="databitsHelpInline" class="text-muted">Possible values: /dev/ttyUSB0, /dev/ttyUSB1, ...</small>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button id="button-modal-addpowerstrip" type="submit" class="btn btn-success" style="margin: 0 auto;">Add</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="DeletePowerstipModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form id="DeletePowerstip" method="post">
+
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="ModalLabelDPs">Selected power strips to delete.</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span id="cerrar-modal" aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <input type="text" id="modal-do" value="" style="display:none;">
+
+                        <div style="margin-top: 1%;">
+                            <div style="">
+                                <select class="custom-select" id="psm" size="2">
+
+                                </select>
+                            </div>
+                            <div style="text-align: center; margin-top: 10px;">
+                                <button type ="button" class="btn btn-primary ml-2" id="add_ps">Add</button>
+                                <button type ="button" class="btn btn-danger ml-2" id="delete_ps">Delete</button>
+                            </div>
+                        </div>
+
+                        <div class="row justify-content-center" style="margin-top: 5%;">
+                            <div id="container-modal">
+                                <p style="font-weight: bold;">Power strips to delete:</p>
+                                <div>
+                                    <ul id="psList" class="show_ps_modals a" style="padding-left: 0px;">
+                                    </ul>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button id="button-modal-deletepowerstrip" type="submit" class="btn btn-success" style="margin: 0 auto;">Accept</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal-alert" tabindex="-1" aria-hidden="true">
+        <div id="modal-alert-content" class="modal-dialog modal-dialog-centered">
+            <div id="modal-content-alert" class="modal-content">
+                <div id="modal-header-alert" class="modal-header">
+                    <h4 class="modal-title">Alert</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span id="cerrar-modal" aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div id="modal-body-alert" class="modal-body">
+
+                </div>
+
+                <div id="modal-footer-alert" class="modal-footer">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="ConnectModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form id="OpenPort" method="GET" action="{% url 'Terminal' %}" target="_blank">
+
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="ModalLabelConnect"></h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span id="cerrar-modal" aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <input id="Portnamehidden" type="hidden" value="" name="PortName"/>
+                        <input id="Devicenamehidden" type="hidden" value="" name="DeviceName"/>
+
+                        <div>
+                            <p>Speed (baudrate): </p>
+                            <input class="form-control" type="text" id="baudrate" value="9600" name="BaudRate"  minlength="2" maxlength="7" pattern="^\d{2,7}$" aria-describedby="baudHelpInline" autocomplete="off" required 
+                                oninvalid="this.setCustomValidity('The parameter was not accepted or the field was left blank.')"  oninput="this.setCustomValidity('')"/>
+                            <small id="baudHelpInline" class="text-muted">Possible values: 50, 75, ..., 4800, 9600, ..., 115200, 230400. ...</small>
+                        </div>
+                        <div id="input-modal">  
+                            <p id="p-modal"> Data Bits: </p>
+                            <input class="form-control" type="text" id="bytesize" value="8" name="ByteSize" minlength="1" maxlength="1" pattern="[5-8]" aria-describedby="databitsHelpInline" autocomplete="off" required 
+                                oninvalid="this.setCustomValidity('The parameter was not accepted or the field was left blank.')"  oninput="this.setCustomValidity('')"/>
+                            <small id="databitsHelpInline" class="text-muted">Possible values: 5, 6, 7, 8.</small>
+                        </div>
+                        <div id="input-modal">
+                            <p id="p-modal"> Stop Bits: </p>
+                            <input class="form-control" type="text" id="stopbits" value="1" name="StopBits" minlength="1" maxlength="3" pattern="^1$|^1[\.][5]$|^2$" aria-describedby="stopbitsHelpInline" autocomplete="off" required 
+                                oninvalid="this.setCustomValidity('The parameter was not accepted or the field was left blank.')"  oninput="this.setCustomValidity('')"/>
+                            <small id="stopbitsHelpInline" class="text-muted">Possible values: 1, 1.5, 2.</small>
+                        </div>
+                        <div id="input-modal">
+                            <p id="p-modal"> Parity: </p>
+                            <select class="custom-select" id="parity" name="Parity">
+                                <option value="N" selected>None</option>
+                                <option value="O">Odd</option>
+                                <option value="E">Even</option>
+                                <option value="M">Mark</option>
+                                <option value="S">Space</option>
+                            </select>
+                        </div>
+                        <div id="input-modal">
+                            <p id="p-modal"> Flow Control: </p>
+                            <select class="custom-select" id="flowcontrol" name="FlowControl">
+                                <option value="None" selected>None</option>
+                                <option value="xonxoff">XON/XOFF</option>
+                                <option value="rtscts">RTS/CTS</option>
+                                <option value="dsrdtr">DSR/DTR</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button id="button-modal" type="submit" class="btn btn-success" onclick="Button_modal(this)" style="margin: 0 auto;">Open</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modal-alert-lost" tabindex="-1" aria-hidden="true">
+        <div id="modal-alert-content" class="modal-dialog modal-dialog-centered">
+            <div id="modal-content-alert" class="modal-content">
+                <div id="modal-header-alert" class="modal-header">
+                    <h4 class="modal-title">Alert</h4>
+                </div>
+
+                <div id="modal-body-alert-lost" class="modal-body">
+                   <p id='p-modal-alert'>Connection lost with server. Once the connection it's back this alert will hide.</p>
+                </div>
+
+                <div id="modal-footer-alert-lost" class="modal-footer">
+
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        
+        //Se pierde Internet
+        window.addEventListener('offline', Lost_internet);
+        
+        //Vuelve
+        window.addEventListener('online', Internet_back);
+
+
+        // Mostrar boton cuando el usuario haga scroll hacia abajo
+        window.onscroll = Show_totop;
+
+
+        //Cambio de temas cuando se pulsa el boton dentro del nombre del usuario
+        var darkSwitch = document.getElementById("darkSwitch");
+        window.addEventListener("load", Change_theme(darkSwitch));
+
+
+        // Si se viene desde Groups pinchando en el nombre del device
+        var NameSearch = '{{ NameSearch }}';
+        var userlogged = '{{ user.is_professor }}';
+        Hover_device('/'+NameSearch, userlogged)
+
+
+        //Para variar la altura de las cards, ya que si se pone fija, cuando desaparece los selects queda hueco blanco
+        var cards = document.getElementsByClassName("card"); 
+        for (i = 0; i < cards.length; i++) {
+            Cards_height(cards[i]);
+        }
+
+
+        // Variables
+        var token = "{{ csrf_token }}";
+        var url_recieve = "{% url 'ControlPanel' %}";
+
+
+        // Comportamiento de los selects para elegir el Power strip
+        var selects_ps = document.getElementsByClassName("cards-select-ps");
+        for (i = 0; i < selects_ps.length; i++) {
+            let url_send = "{% url 'SelectedPowerStrip' %}";
+
+            Selects_ps_behaviour(selects_ps[i], token, url_send, url_recieve);
+        }
+
+        // Comportamiento de los selects para elegir el socket
+        var selects_sk = document.getElementsByClassName("cards-select-sk"); //get all socket selects
+        for (i = 0; i < selects_sk.length; i++) {
+            let url_send = "{% url 'SelectedSocket' %}";
+
+            Selects_sk_behaviour(selects_sk[i], token, url_send, url_recieve);
+        }
+
+
+        // Borrar inputs puestos por el user al añadir y cerrar modal
+        $("#AddPowerstipModal").on("hidden.bs.modal", function(){
+            document.getElementById("AddPowerstip").reset();
+        });
+
+        //Funcion mostrar modal en js
+        //Funcion añadir regletas
+        $('#AddPowerstip').submit( function(e){
+            let url_send = "{% url 'AddPowerStrip' %}";
+
+            Add_ps(e, token, url_send, url_recieve);
+        });
+
+
+        // Para borrar ps de la BD
+        var Ps_List = []
+
+        //Mostrar modal delete
+        $("#deletepowerstrip-modal").on("click", function() {
+            let url_send = "{% url 'GetAllPowerStrips' %}";
+
+            Delete_powestrip_modal(token, url_send, Ps_List);
+        });
+
+        //Funciones botones dentro del modal
+        $('#add_ps').on("click", function() { //Meter en prelista ps
+            Add_list_delete(Ps_List);
+        });
+
+        $('#delete_ps').on("click", function() { //Sacar en prelista ps
+            Delete_list_delete(Ps_List);
+        });
+
+        //Boton borrar dentro del modal
+        $('#DeletePowerstip').submit(function(e){
+            let url_send = "{% url 'DeletePowerStrip' %}";
+
+            Delete_ps(e, token, url_send, url_recieve, Ps_List);
+        });
+
+
+        //Boton encender todos (boton On) Si ya esta encendido lo deja
+        $('#on_all').on("click", function() {
+            let url_send = "{% url 'On_Off_All' %}";
+
+            On_all(token, url_send, url_recieve);
+        });
+
+        //boton apagar todos (Boton Off) Si ya esta pagado lo deja
+        $('#off_all').on("click", function() {
+            let url_send = "{% url 'On_Off_All' %}";
+
+            Off_all(token, url_send, url_recieve);
+        });
+
+
+        // boton apagar y encender de cada device (boton On/off)
+        var on_off_buttons = document.getElementsByClassName("on_off_single");
+        for (i = 0; i < on_off_buttons.length; i++) {
+            let url_send = "{% url 'On_Off_Single' %}";
+            let device = on_off_buttons[i].id.slice(14);
+
+            on_off_buttons[i].onclick = function(event) {
+                On_Off_Single(device, token, url_send, url_recieve);
+            }
+        }
+
+
+        // Boton para comprobar si esta siendo usado o apagado individualmente (Boton connect individual)
+        var connect_buttons = document.getElementsByClassName("connect_button");
+
+        for (i = 0; i < connect_buttons.length; i++) {
+            let url_send = "{% url 'CheckSerialPort' %}";
+            let device = connect_buttons[i].id.slice(9);
+            let name = document.getElementById("dev_"+device).innerHTML.slice(0, -1);
+
+            connect_buttons[i].onclick = function(event) {
+                Connect(device, name, token, url_send, url_recieve);
+            }
+        }
+
+        //Cerrar modal cuando se pulsa el acceptar de dentro (boton open dentro del modal)
+        const Button_modal = event => {
+            $('#ConnectModal').modal('hide');
+        };
+
+    </script>
+</body>
+
+</html>

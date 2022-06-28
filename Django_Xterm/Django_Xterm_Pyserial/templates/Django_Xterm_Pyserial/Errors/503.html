@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Favicon -->
+    {% load static %}
+    <link rel="shortcut icon" href="{% static '/img/favicon.png' %}"/>
+    
+    <!-- CSS only -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+        integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static '/css/Errors/503.css' %}"/>
+
+    <!-- JS, Popper.js, and jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+        integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+        crossorigin="anonymous"></script>
+    <script src="{% static '/js/Errors/503.js' %}"></script>
+
+    <title>Error 503</title>
+</head>
+
+<body style="overflow-x: hidden;">
+
+    <nav class="navbar navbar-expand-lg bg-dark navbar-dark sticky-top">
+        <a class="navbar-brand" href="{% url 'ControlPanel' %}">
+        <img src="{% static '/img/favicon.png' %}" alt="Term" style="width:40px;">
+        </a>
+
+        <h1 class="navbar-text" id="place">ERROR</h1>
+
+        <div class="collapse navbar-collapse nav-group-buttons" id="collapsibleNavbar">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="links_nav" href="{% url 'ControlPanel' %}">Devices</a>
+                </li>
+                {% if user.is_professor %}
+                    <li class="nav-item">
+                        <li class="nav-item">
+                            <a class="links_nav" href="{% url 'Groups' %}">Groups</a>
+                        </li>
+                    <li class="nav-item">
+                        <li class="nav-item">
+                            <a class="links_nav" href="{% url 'Students' %}">Students</a>
+                        </li>
+                    </li>
+                {% endif %}
+            </ul>
+
+            <h4 class="navbar-text" id="w">Welcome, </h4>
+            
+            <div class="nav-item dropdown">
+                <h5 class="navbar-text" id="navbardrop" data-toggle="dropdown">
+                    {{ user.get_short_name }}
+                </h5>
+                <div id="dropdown-menu-u" class="dropdown-menu dropdown-menu-right">
+                    <div class="custom-control custom-switch dropdown-item custom-control-right">
+                        <input type="checkbox" class="custom-control-input" id="darkSwitch" />
+                        <label class="custom-control-label" for="darkSwitch">Dark Mode</label>
+                    </div>
+                    <a id="logout-button" class="btn-dropdown-u" href="{% url 'Logout' %}">Logout</a>
+                </div>
+            </div> 
+        </div>
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+    </nav>
+
+    <div id="cont">
+        <h1 class="Error" id="e503"> 503 </h1>
+        <p class="Error"> The service is unavailable. </p>
+    </div>
+
+    <div class="modal" id="modal-alert-lost" tabindex="-1" aria-hidden="true">
+        <div id="modal-alert-content" class="modal-dialog modal-dialog-centered">
+            <div id="modal-content-alert" class="modal-content">
+                <div id="modal-header-alert" class="modal-header">
+                    <h4 class="modal-title">Alert</h4>
+                </div>
+
+                <div id="modal-body-alert-lost" class="modal-body">
+                   <p id='p-modal-alert'>Connection lost with server. Once the connection it's back this alert will hide.</p>
+                </div>
+
+                <div id="modal-footer-alert-lost" class="modal-footer">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        //Se pierde Internet
+        window.addEventListener('offline', Lost_internet);
+        
+        //Vuelve
+        window.addEventListener('online', Internet_back);
+
+
+        //Cambio de temas cuando se pulsa el boton dentro del nombre del usuario
+        var darkSwitch = document.getElementById("darkSwitch");
+        window.addEventListener("load", Change_theme(darkSwitch));
+
+    </script>
+</body>
+
+</html>

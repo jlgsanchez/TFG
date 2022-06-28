@@ -1,0 +1,513 @@
+/* Nav Bar */
+
+.nav-group-buttons {
+    margin-left: 2%;
+}
+
+.navbar-text {
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
+
+.links_nav:link,
+.links_nav:visited {
+    background-color: #343a40;
+    border: 1px solid transparent;
+    border-radius: 0.25rem;
+    color: white;
+    padding: 6px 12px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.links_nav:hover,
+.links_nav:active {
+    background-color: #23272b;
+}
+
+#w {
+    margin-bottom: 1.5px;
+}
+
+#navbardrop {
+    margin-left: 5%;
+    cursor: pointer;
+    color: #eee;
+}
+
+div.custom-control-right {
+    padding-right: 0;
+    padding-left: 23px;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+div.custom-control-right .custom-control-label::after {
+    right: -1.5rem;
+    left: auto;
+}
+
+div.custom-control-right .custom-control-label::before {
+    right: -2.35rem;
+    left: auto;
+}
+
+.btn-dropdown-u:link,
+.btn-dropdown-u:visited {
+    border: 1px solid transparent;
+    border-radius: 0;
+    width: 100%;
+    height: 100%;
+    color: white;
+    padding: 6px 12px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+
+#password-button:link,
+#password-button:visited {
+    background-color: #6c757d;
+}
+
+#logout-button:link,
+#logout-button:visited {
+    background-color: #dc3545;
+}
+
+#password-button:hover,
+#password-button:active {
+    background-color: #5a6268;
+}
+
+#logout-button:hover,
+#logout-button:active {
+    background-color: #c82333;
+}
+
+#dropdown-menu-u {
+    padding: 0;
+    width: 160px;
+}
+
+
+/* On/Off */
+
+#dropdown-menu-ps {
+    padding: 0;
+}
+
+.btn-dropdown-ps {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+}
+
+.after_navigator_buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+#on_all {
+    margin-left: 10px;
+}
+
+#off_all {
+    margin-left: 10px;
+}
+
+#no_devices {
+    color: red;
+    margin: 10px;
+    font-size: 2.5vw;
+}
+
+
+/* Device Containers */
+
+.card {
+    margin: 20px;
+    width: 268px;
+}
+
+#head {
+    padding-bottom: 0;
+}
+
+.card-header {
+    background-color: rgb(0 0 0 / 7%);
+}
+
+.card-footer {
+    background-color: rgb(0 0 0 / 7%);
+}
+
+.dot {
+    height: 25px;
+    width: 25px;
+    border-radius: 50%;
+    float: right;
+    border: 1px solid black;
+}
+
+.dot_green {
+    background-color: green;
+}
+
+.dot_red {
+    background-color: red;
+}
+
+.dot_grey {
+    background-color: grey;
+}
+
+.cards-select-ps {
+    margin-right: 5px;
+}
+
+.cards-select-ps {
+    z-index: 99;
+}
+
+.cards-select-sk {
+    z-index: 99;
+}
+
+.on_off_single {
+    margin-left: 30px;
+}
+
+
+/* Loading */
+
+#loading-overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    display: none;
+    align-items: center;
+    background-color: #000;
+    z-index: 1021;
+    opacity: 0.5;
+}
+
+.loading-icon {
+    position: absolute;
+    border-top: 2px solid #fff;
+    border-right: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+    border-left: 2px solid #767676;
+    border-radius: 25px;
+    width: 25px;
+    height: 25px;
+    margin: 0 auto;
+    left: 50%;
+    margin-left: -20px;
+    top: 50%;
+    margin-top: -20px;
+    z-index: 4;
+    -webkit-animation: spin 1s linear infinite;
+    -moz-animation: spin 1s linear infinite;
+    animation: spin 1s linear infinite;
+}
+
+@-moz-keyframes spin {
+    100% {
+        -moz-transform: rotate(360deg);
+    }
+}
+
+@-webkit-keyframes spin {
+    100% {
+        -webkit-transform: rotate(360deg);
+    }
+}
+
+@keyframes spin {
+    100% {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+
+
+/* Modal connect */
+
+.modal-header {
+    background-color: rgb(0 0 0 / 7%);
+}
+
+.modal-footer {
+    background-color: rgb(0 0 0 / 7%);
+}
+
+.modal-dialog-centered {
+    justify-content: center;
+}
+
+#input-modal {
+    margin-top: 4%;
+}
+
+#p-modal {
+    margin-bottom: 8px;
+}
+
+
+/* Modal Alert */
+
+#modal-alert-content {
+    align-items: flex-start;
+    margin-top: 28px;
+}
+
+#modal-content-alert {
+    width: 85%;
+    -webkit-animation-name: animatetop;
+    -webkit-animation-duration: 0.4s;
+    animation-name: animatetop;
+    animation-duration: 0.4s
+}
+
+@-webkit-keyframes animatetop {
+    from {
+        top: -300px;
+        opacity: 0
+    }
+    to {
+        top: 0;
+        opacity: 1
+    }
+}
+
+@keyframes animatetop {
+    from {
+        top: -300px;
+        opacity: 0
+    }
+    to {
+        top: 0;
+        opacity: 1
+    }
+}
+
+#p-modal-alert {
+    margin-bottom: 0px;
+}
+
+#modal-body-alert {
+    height: 100px;
+    overflow: auto;
+}
+
+
+/* Modal Add Power strip */
+
+.checkbox-modal-addps {
+    height: auto;
+    width: auto;
+    margin-left: 10px;
+    margin-top: 7px;
+}
+
+.exp-checkbox-modal-addps {
+    margin-left: 16px;
+    margin-top: 2px;
+}
+
+
+/* Modal Delete Power strip */
+
+.show_ps_modals {
+    height: 120px;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-left: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border-radius: 5px;
+    border: 1px solid rgba(0, 0, 0, .125);
+}
+
+.list-group-item {
+    margin-right: 0.5rem;
+    padding: 0.75rem 1.5rem;
+}
+
+
+/* To Top Button */
+
+#to-top {
+    display: none;
+    /* Hidden by default */
+    position: fixed;
+    /* Fixed/sticky position */
+    bottom: 20px;
+    /* Place the button at the bottom of the page */
+    right: 30px;
+    /* Place the button 30px from the right */
+    z-index: 99;
+    /* Make sure it does not overlap */
+    border: none;
+    /* Remove borders */
+    outline: none;
+    /* Remove outline */
+    background-color: red;
+    /* Set a background color */
+    color: white;
+    /* Text color */
+    cursor: pointer;
+    /* Add a mouse pointer on hover */
+    padding: 15px;
+    /* Some padding */
+    border-radius: 10px;
+    /* Rounded corners */
+    font-size: 18px;
+    /* Increase font size */
+}
+
+#to-top:hover {
+    background-color: #555;
+    /* Add a dark-grey background on hover */
+}
+
+
+/* Dark Mode */
+
+[data-theme="dark"] {
+    background-color: rgb(18 21 24) !important;
+    color: #eee;
+}
+
+[data-theme="dark"] .card {
+    background-color: #282e34;
+    border: 1px solid rgb(255 255 255 / 13%);
+    color: #ffffff;
+}
+
+[data-theme="dark"] .card-header {
+    background-color: #343a40;
+    color: #ffffff;
+}
+
+[data-theme="dark"] .card-footer {
+    background-color: #343a40;
+    color: #ffffff;
+}
+
+[data-theme="dark"] .modal-content {
+    border: 1px solid #444;
+}
+
+[data-theme="dark"] .modal-header {
+    border-bottom: 1px solid #444;
+    background-color: #343a40;
+}
+
+[data-theme="dark"] #cerrar-modal {
+    color: #ffffff;
+}
+
+[data-theme="dark"] .modal-body {
+    background-color: #282e34;
+}
+
+[data-theme="dark"] .modal-footer {
+    border-top: 1px solid #444;
+    background-color: #343a40;
+}
+
+[data-theme="dark"] #night-user {
+    background-color: #343a40;
+    border-top: 1px solid #444;
+    color: #ffffff;
+}
+
+[data-theme="dark"] .custom-control-label {
+    background-color: #343a40;
+}
+
+[data-theme="dark"] .list-group-item {
+    background-color: #282e34;
+    border: 1px solid rgb(255 255 255 / 13%);
+    color: #ffffff;
+}
+
+[data-theme="dark"] .show_ps_modals {
+    border: 1px solid rgb(255 255 255 / 13%);
+}
+
+
+/* Responsive */
+
+@media (max-width: 991px) {
+    h1#place {
+        float: right;
+        left: 34%;
+        top: 10px;
+        position: absolute;
+    }
+    #w {
+        display: none;
+    }
+    #navbardrop {
+        margin-left: 2%;
+        padding-top: 0.5rem;
+        padding-bottom: 10px;
+    }
+    .dropdown-menu-right {
+        right: auto;
+        left: 70px;
+        top: 33px;
+    }
+    .nav-group-buttons {
+        margin-left: 0;
+    }
+    .navbar-dark .navbar-toggler {
+        color: rgba(255, 255, 255, .5);
+        float: right;
+        right: 0;
+        top: 13px;
+        position: absolute;
+        border-color: rgba(255, 255, 255, .1);
+        margin-right: 10px;
+    }
+    #no_devices {
+        font-size: 20px;
+    }
+    .modal-content {
+        width: 81%;
+    }
+}
+
+@media (max-width: 734px) {
+    h1#place {
+        left: 25%;
+    }
+}
+
+@media (max-width: 448px) {
+    h1#place {
+        left: 20%;
+        font-size: 35px;
+    }
+    .modal-title {
+        font-size: 15px;
+    }
+    h4.modal-title {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 356px) {
+    h1#place {
+        font-size: 30px;
+        top: 15px;
+    }
+}

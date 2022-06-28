@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Favicon -->
+    {% load static %}
+    <link rel="shortcut icon" href="{% static '/img/favicon.png' %}"/>
+    
+    <!-- CSS only -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+        integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="{% static '/css/Groups.css' %}"/>
+
+    <!-- JS, Popper.js, and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.js"
+        integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.nicescroll/3.7.6/jquery.nicescroll.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+        integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="{% static '/js/Groups.js' %}"></script>
+
+    <title>Groups</title>
+</head>
+
+<body style="overflow-x: hidden;">
+
+    <nav id="top-bar" class="navbar navbar-expand-lg bg-dark navbar-dark sticky-top">
+        <a class="navbar-brand" href="{% url 'ControlPanel' %}">
+        <img src="{% static '/img/favicon.png' %}" alt="Term" style="width:40px;">
+        </a>
+
+        <h1 class="navbar-text" id="place">Groups</h1>
+
+        <div class="collapse navbar-collapse nav-group-buttons" id="collapsibleNavbar">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="links_nav" href="{% url 'ControlPanel' %}">Devices</a>
+                </li>
+                <li class="nav-item">
+                    <a class="links_nav" href="{% url 'Groups' %}">Groups</a>
+                </li>
+                <li class="nav-item">
+                    <a class="links_nav" href="{% url 'Students' %}">Students</a>
+                </li>
+            </ul>
+
+            <h4 class="navbar-text" id="w">Welcome, </h4>
+            
+            <div class="nav-item dropdown">
+                <h5 class="navbar-text" id="navbardrop" data-toggle="dropdown">
+                    {{ user.get_short_name }}
+                </h5>
+                <div id="dropdown-menu-u" class="dropdown-menu dropdown-menu-right">
+                    <div id="night-user" class="custom-control custom-switch dropdown-item custom-control-right">
+                        <input type="checkbox" class="custom-control-input" id="darkSwitch" />
+                        <label class="custom-control-label" for="darkSwitch">Dark Mode</label>
+                    </div>
+                    <a id="password-button" class="btn-dropdown-u" href="{% url 'Password_Change' %}">Change Password</a>
+                    <a id="logout-button" class="btn-dropdown-u" href="{% url 'Logout' %}">Logout</a>
+                </div>
+            </div> 
+        </div>
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </nav>
+
+    <div class="options_buttons">
+        <button id="create" class="btn btn-dark">Create</button>
+        <button id="deleteAll" class="btn btn-dark">Delete All</button>
+    </div>
+
+    <div id="Group_Container" class="row justify-content-center">
+        {% if Groups|length == 0 %}
+            <h2 style="color: red; margin: 10px; font-size: 30px;">No groups created yet. </h2>
+        {% else %}
+            {% for Group in Groups %}
+                <div id="{{ Group.name }}" class="card">
+
+                    <div id="head" class="card-header">
+                        <div class="row">
+                            <div class="col-10">
+                                <p>Group Name: {{ Group.name }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="body" class="card-body row justify-content-center">
+                        <div id="container">
+                            <p id="p-groups">Students in group:</p>
+                            <div>
+                                <ul id="show_users" class="scroll-custom">
+                                    {% if Group.users|first|length == 0 %}
+                                        <li class="list-group-item">No users</li>
+                                    {% else %}
+                                        {% for user in Group.users %}
+                                            <!-- <li class="list-group-item"><a href="{% url 'Students' %}" target="_blank">{{ user }}</a></li> -->
+                                            <li class="list-group-item">
+                                                <a href="{% url 'StudentsName' Name=user %}">{{ user }}</a>
+                                            </li>
+                                        {% endfor %}
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+                        <div id="container">
+                            <p id="p-groups">Devices in group:</p>
+                            <div>
+                                <ul id="show_devices" class="scroll-custom">
+                                    {% if Group.devices|first|length == 0 %}
+                                        <li class="list-group-item">No devices</li>
+                                    {% else %}
+                                        {% for device in Group.devices %}
+                                            <li class="list-group-item">
+                                                <a href="{% url 'ControlPanelName' Name=device %}">{{ device }}</a>
+                                            </li>
+                                        {% endfor %}
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="foot" class="card-footer text-center">
+                        <!-- <form method="GET" id = "editForm{{Group.pk}}" onSubmit="editSubmit(this)"> -->
+                        <input id="editInput{{Group.pk}}" type="hidden" value="{{ Group.pk }}"/>
+                        <input id="editName{{Group.pk}}" type="hidden" value="{{ Group.name }}"/>
+                        <button id="editButton{{Group.pk}}" type="submit" class="btn btn-success edit_button">Edit</button>
+                        <!-- </form> -->
+
+                        <!-- <form method="GET" id = "DeleteForm"> -->
+                        <input id="deleteInput{{Group.pk}}" type="hidden" value="{{ Group.pk }}"/>
+                        <input id="deleteName{{Group.pk}}" type="hidden" value="{{ Group.name }}"/>
+                        <button id="deleteButton{{Group.pk}}" type="submit" class="btn btn-danger delete_button">Delete</button>
+                        <!-- </form> -->
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <div id="up" class="container mt-3">
+        <div id="upload-div" class="custom-file mb-3">
+            <input type="file" id="file" required="required" class="custom-file-input" accept=".json">
+            <label class="custom-file-label" for="customFile">Choose a json file</label>
+        </div>
+        <button id="submit_upload" class="btn btn-primary float-end" type="submit">Submit File</button>
+    </div>
+
+    <button onclick="topFunction()" id="to-top" title="Go to top">Top</button>
+
+    <div id="loading-overlay">
+        <div class="loading-icon"></div>
+    </div>  
+
+    <div class="modal fade" id="modal-alert" tabindex="-1" aria-hidden="true">
+        <div id="modal-alert-content" class="modal-dialog modal-dialog-centered">
+            <div id="modal-content-alert" class="modal-content">
+                <div id="modal-header-alert" class="modal-header">
+                    <h4 class="modal-title">Alert</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span id="cerrar-modal" aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div id="modal-body-alert" class="modal-body modal-body-overflow">
+
+                </div>
+
+                <div id="modal-footer-alert" class="modal-footer">
+                    <button id="delete-before" type="button" class="btn btn-primary modal-button">Delete</button>
+                    <button id="merge" type="button" class="btn btn-primary modal-button">Merge</button>
+                    <button id="cancel" type="button" class="btn btn-primary modal-button" data-dismiss="modal">Cancel</button>
+
+                    <button id="delete-before-file" type="button" class="btn btn-primary modal-button">Delete</button>
+                    <button id="merge-file" type="button" class="btn btn-primary modal-button">Merge</button>
+                    <button id="cancel-file" type="button" class="btn btn-primary modal-button" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal-alert-File" tabindex="-1" aria-hidden="true">
+        <div id="modal-alert-content" class="modal-dialog modal-dialog-centered">
+            <div id="modal-content-alert" class="modal-content">
+                <div id="modal-header-alert" class="modal-header">
+                    <h4 class="modal-title">Alert</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span id="cerrar-modal" aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div id="modal-body-alert-File" class="modal-body modal-body-overflow">
+
+                </div>
+
+                <div id="modal-footer-alert" class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form id="AddGroup" method="post">
+
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="ModalLabel">Groups</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span id="cerrar-modal" aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <input type="text" id="modal-do" value="" style="display:none;">
+                        <div style="margin-top: 1%;">
+                            <p>Name of the group: </p>
+                            <input id="groupName" class="form-control" type="text" autocomplete="off" required 
+                                oninvalid="this.setCustomValidity('The field can not be left blank')"  oninput="this.setCustomValidity('')"/>
+                        </div>
+
+                        <div style="margin-top: 5%;">
+                            <p>Users: </p>
+                            <div class="select-butons-modal">
+                                <select class="custom-select" id="users">
+
+                                </select>
+                                <button type ="button" class="btn btn-primary ml-2" id="add_user">Add</button>
+                                <button type ="button" class="btn btn-danger ml-2" id="delete_user">Delete</button>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 5%;">  
+                            <p>Devices: </p>
+                            <div class="select-butons-modal">
+                                <select class="custom-select" id="devices_select">
+
+                                </select>
+                                <button type ="button" class="btn btn-primary ml-2" id="add_device">Add</button>
+                                <button type ="button" class="btn btn-danger ml-2" id="delete_device">Delete</button>
+                            </div>
+                        </div>
+
+                        <div class="row justify-content-center" style="margin-top: 5%;">
+                            <div id="container-modal">
+                                <p style="font-weight: bold;">Users in group:</p>
+                                <div>
+                                    <ul id="usersList" class="show_users_modals a">
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div id="container-modal">
+                                <p style="font-weight: bold;">Devices in group:</p>
+                                <div>
+                                    <ul id="devicesList" class="show_devices_modals a">
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button id="Button_modal" type="submit" class="btn btn-success" style="margin: 0 auto;">Accept</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modal-alert-lost" tabindex="-1" aria-hidden="true">
+        <div id="modal-alert-content" class="modal-dialog modal-dialog-centered">
+            <div id="modal-content-alert" class="modal-content">
+                <div id="modal-header-alert" class="modal-header">
+                    <h4 class="modal-title">Alert</h4>
+                </div>
+
+                <div id="modal-body-alert-lost" class="modal-body">
+                   <p id='p-modal-alert'>Connection lost with server. Once the connection it's back this alert will hide.</p>
+                </div>
+
+                <div id="modal-footer-alert-lost" class="modal-footer">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        //Scroll grupos
+        $(".scroll-custom").niceScroll({
+            cursorwidth:3,
+            cursoropacitymin:0.4,
+            cursorcolor:'#343a40',
+            cursorborder:'none',
+            cursorborderradius:4,
+            autohidemode:'leave'
+        });
+
+        // selects del modal 
+        $('.custom-select').select2({
+            dropdownParent: $('#editModal')
+        });
+
+
+        //Se pierde Internet
+        window.addEventListener('offline', Lost_internet);
+        
+        //Vuelve
+        window.addEventListener('online', Internet_back);
+
+
+        // Mostrar boton cuando el usuario haga scroll hacia abajo
+        window.onscroll = Show_totop;
+
+
+        //Cambio de temas cuando se pulsa el boton dentro del nombre del usuario
+        var darkSwitch = document.getElementById("darkSwitch");
+        window.addEventListener("load", Change_theme(darkSwitch));
+
+
+        // Si se viene desde Students pinchando en el nombre del grupo
+        var NameSearch = '{{ NameSearch }}';
+        Hover_group(NameSearch)
+
+
+        // Variables
+        var token = "{{ csrf_token }}";
+        var url_recieve = "{% url 'Groups' %}";
+
+
+        //Boton borrar todos los grupos (Correspondientes a super conectado)
+        $('#deleteAll').on("click", function() {
+            let container = document.getElementsByClassName("card"); 
+
+            if (container.length > 0){ //Comprobación de si hay gropos mediante los conteiners en el DOM (html)
+                let url_send = "{% url 'DeleteAllGroups' %}";
+
+                Delete_all(token, url_send, url_recieve);
+            } else {
+                $("#loading-overlay").hide();
+                Alert_modal("There are no groups.","","");
+            }
+        });
+
+
+        // Variables con los usuario y devices
+        var User_List = []
+        var Devices_List = []
+
+        //Crear groupos en el modal (faltaria darle al boton de abajo para el submit)
+        $("#create").on("click", function() {
+            let url_send = "{% url 'GetAllNormalUsersAndDevices' %}";
+
+            Create_modal(token, url_send, User_List, Devices_List);
+        });
+
+        //Funciones botones dentro del modal
+        $('#add_user').on("click", function() {  //Meter en prelista user
+            Add_list_user(User_List);
+        });
+
+        $('#delete_user').on("click", function() { //Sacar en prelista user
+            Delete_list_user(User_List);
+        });
+
+        $('#add_device').on("click", function() { //Meter en prelista device
+            Add_list_device(Devices_List);
+        });
+
+        $('#delete_device').on("click", function() { //Sacar en prelista device
+            Delete_list_device(Devices_List);
+        });
+
+
+        //Boton editar individual de cada grupo
+        var edit_buttons = document.getElementsByClassName("edit_button");
+        for (i = 0; i < edit_buttons.length; i++) {
+            let url_send1 = "{% url 'GetAllNormalUsersAndDevices' %}";
+            let url_send2 = "{% url 'EditGroup' %}";
+
+            edit_buttons[i].onclick = function() {
+                let siblings = $(this).siblings();
+                let id = siblings[0].value;
+                let name = siblings[1].value;
+
+                Edit_button(id, name, User_List, Devices_List, token, url_send1, url_send2);
+            }
+        }
+
+
+        //Boton dentro de modal, aceptar para crear el grupo para el profesor conectado
+        $('#AddGroup').submit(function(e){
+            let url_send = "{% url 'AddGroup' %}";
+
+            Add_group(e, token, url_send, url_recieve, User_List, Devices_List);
+        });
+
+        // Funciones botones modal cuando ya hay un grupo con ese nombre
+        $('#merge').on("click", function() {
+            let url_send = "{% url 'AddGroupMerge' %}";
+
+            Merge(User_List, Devices_List, token, url_send, url_recieve);
+        });
+
+        $('#delete-before').on("click", function() {
+            let url_send = "{% url 'AddGroupDelB' %}";
+
+            Delete_Before(User_List, Devices_List, token, url_send, url_recieve);
+        });
+
+
+        //Boton borrar individual de cada grupo
+        var delete_buttons = document.getElementsByClassName("delete_button");
+        for (i = 0; i < delete_buttons.length; i++) {
+            let url_send = "{% url 'DeleteGroup' %}";
+
+            delete_buttons[i].onclick = function() {
+                let siblings = $(this).siblings();
+                let id = siblings[3].value;
+
+                Delete_button(id, token, url_send, url_recieve);
+            }
+        }
+
+
+        //Funciones para subir archivo json (Sin gurdarlo en el server), leerlo y crear los grupos para el profesor conectado
+        $(".custom-file-input").on("change", function() {
+            var fileName = $(this).val().split("\\").pop();
+            $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+        });
+
+        $("#submit_upload").on("click", function() {
+            let url_send = "{% url 'AddGroupsFile' %}";
+            
+            Upload_Groups_File(token, url_send, url_recieve);
+
+        });
+
+        // Funciones botones modal-File cuando ya hay un grupo con ese nombre
+        $('#merge-file').on("click", function(){
+            let url_send = "{% url 'Merge_File' %}";
+
+            Merge_File(token, url_send, url_recieve);
+        });
+
+        $('#delete-before-file').on("click", function(){
+            let url_send = "{% url 'Delete_Before_File' %}";
+
+            Delete_Before_File(token, url_send, url_recieve);
+        });
+
+    </script>
+</body>
+
+</html>

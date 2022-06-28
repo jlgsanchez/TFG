@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en" style="height: 100%">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Favicon -->
+    {% load static %}
+    <link rel="shortcut icon" href="{% static '/img/favicon.png' %}"/>
+
+    <!-- CSS only -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+        integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    
+    <link rel="stylesheet" href="https://unpkg.com/xterm@3.14.5/dist/xterm.css"/>
+    <link rel="stylesheet" href="{% static '/css/Terminal.css' %}"/>
+
+    <!-- JS, Popper.js, and jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+        integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+        crossorigin="anonymous"></script>    
+    <script src="https://unpkg.com/xterm@3.14.5/dist/xterm.js"></script>
+    
+    <title>XTerm Terminal</title>
+</head>
+
+<body style="overflow-x: hidden; height: 100vh; display: flex; flex-direction: column;">
+
+    <nav class="navbar bg-dark navbar-dark">
+        <div>
+            <a class="navbar-brand">
+                <img src="{% static '/img/favicon.png' %}" alt="Term" style="width:40px;">
+            </a>
+
+            <h1 class="navbar-text" id="header">Terminal to {{ DeviceName }}</h1>
+        </div>
+
+        <h3 class="navbar-text" id="red-alert" style="color: red">Please Use Close Button to exit. Don't press back button or close tab directly!</h3>
+        <h3 class="navbar-text" id="red-alert2" style="color: red">Please Use Close Button to exit.</h3>
+
+        <div style="display: flex; justify-content: space-between;">
+            <button id ="close" type="submit" class="btn btn-danger">Close</button>
+        </div>
+
+    </nav>
+
+    <div id="Terminal">
+    </div>
+
+    <div class="modal" id="modal-alert" tabindex="-1" aria-hidden="true">
+        <div id="modal-alert-content" class="modal-dialog modal-dialog-centered">
+            <div id="modal-content-alert" class="modal-content">
+                <div id="modal-header-alert" class="modal-header">
+                    <h4 class="modal-title">Alert</h4>
+                </div>
+
+                <div id="modal-body-alert" class="modal-body">
+                   <p id='p-modal-alert'>Connection lost with server. The window will close in 1 minute unless the connection returns. <br/>If the connection doesn't return before closing, the device will be locked for 1 hour since the connection.</p>
+                </div>
+
+                <div id="modal-footer-alert" class="modal-footer">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modal-alert-continue" tabindex="-1" aria-hidden="true">
+        <div id="modal-alert-content" class="modal-dialog modal-dialog-centered">
+            <div id="modal-content-alert" class="modal-content">
+                <div id="modal-header-alert" class="modal-header">
+                    <h4 class="modal-title">Alert</h4>
+                </div>
+
+                <div id="modal-body-alert" class="modal-body">
+                   <p id='p-modal-alert'>Maximum time per connection reached. Do you want to continue or leave?</p>
+                </div>
+
+                <div id="modal-footer-alert" class="modal-footer">
+                    <button id="continue" type="button" class="btn btn-success">Continue</button>
+                    <button id="force-close" type="button" class="btn btn-danger">Leave</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script> 
+
+        // variable con el puerto y el dispositivo
+        var device = '{{ PortName }}';
+        var deviceName = '{{ DeviceName }}'
+
+
+        //Señal cuando se cierra la ventana para eliminar el device de la BD Active_Device
+        window.addEventListener('unload', () => {
+            var dataR = new FormData();
+            dataR.append("csrfmiddlewaretoken", "{{ csrf_token }}");
+            dataR.append("PortName", device);
+            navigator.sendBeacon('/RemoveDevice/', dataR);
+        });
+
+
+        //Cerrar ventana sin aviso al usuario
+        function forzar_cerrar() {
+            document.getElementById("ttyd").remove();
+            window.close();
+        }
+
+
+        // Boton salir
+        $('#close').click(() => {
+            forzar_cerrar();
+        });
+
+
+        // Al tiempo que le digamos fuerza la salida (En views funcion CheckSerialPort el tiempo tiene que estar sincronizado)
+        // Duración conexión. Se pregunta si quiere seguir o no. Si no se pulsan en 1 min se sale
+        var monitor = setInterval(function() {
+            $('#modal-alert-continue').modal('show');
+            force_close = setTimeout(forzar_cerrar, 60000);
+        }, 3600000); // 5000 -> 5 seg; 60000 -> 1 min; 300000 -> 5 min; 3600000 -> 1 hora 
+
+        // Botones modal seguir o no
+        $('#continue').click(() => {
+            $('#modal-alert-continue').modal('hide');
+            document.getElementById("ttyd").remove();
+            location.reload();
+        });
+
+        $('#force-close').click(() => {
+            $('#modal-alert-continue').modal('hide');
+            forzar_cerrar();
+        });
+
+
+        // Modal cuando se pierde conexión con el servidor
+        window.addEventListener('offline', function(event){
+            $('#modal-alert').modal({backdrop: 'static', keyboard: false}); //Modal no se cierra cuando el usuario hace click fuera o presiona escape
+            $('#modal-alert').modal('show');
+            clearInterval(monitor); 
+            setTimeout(forzar_cerrar, 60000); //1 min
+        });        
+        
+        // Modal cuando vuelve
+        window.addEventListener('online', function(event){
+            $('#modal-alert').modal('hide');
+            document.getElementById("ttyd").remove();
+            location.reload();
+        });
+        
+
+        //Ejecutar script ttyd
+        $(function() {
+            var dataC = new FormData();
+            dataC.append("csrfmiddlewaretoken", "{{ csrf_token }}");
+            dataC.append("PortName", '{{ PortName }}');
+            dataC.append("BaudRate", '{{ BaudRate }}');
+            dataC.append("ByteSize", '{{ ByteSize }}');
+            dataC.append("StopBits", '{{ StopBits }}');
+            dataC.append("Parity", '{{ Parity }}');
+            dataC.append("FlowControl", '{{ FlowControl }}');
+            navigator.sendBeacon('/ConnectToSerialPort/', dataC);
+        });
+
+        
+        // Para obtener el puerto donde se va a ejecutar ttyd.
+        var split = device.split('B'); // [ '/dev/ttyUSB', 'X' ] siendo X un numero empezando por 0
+        var port = parseInt(split[1]) + 9080; // Puerto base 9080 + X, sera donde se ejecute (En service.py - openPort)
+
+        //Probar para obtener el hostname y no tenerlo puesto direactamente
+        var protocolo = window.location.protocol;
+        var direccion = window.location.hostname;
+        var direccionCompleta = protocolo + "//" + direccion + ":" + port;
+        
+        function myframe() {
+            var frameTtyd = document.createElement("iframe");
+            frameTtyd.setAttribute('id','ttyd');
+
+            document.getElementById('Terminal').appendChild(frameTtyd);
+            frameTtyd.src = direccionCompleta;    // Depende de como iniciemos. Solo en la propia máquina
+            console.log(frameTtyd.src);
+            frameTtyd.width = "100%";
+            frameTtyd.height = "100%";
+        }
+
+        setTimeout(myframe, 250); //Para que de tiempo a lanzar script ttyd y luego intente la conexion el iframe
+
+    </script>
+</body>
+
+</html>

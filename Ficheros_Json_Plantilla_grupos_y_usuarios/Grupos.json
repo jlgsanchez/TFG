@@ -1,0 +1,32 @@
+{
+    "groups": [{
+            "name": "Group 1",
+            "users": ["student1@email.es"],
+            "devices": ["/dev/ttyUSB0"]
+        },
+
+        {
+            "name": "Group 2",
+            "users": ["student2@email.es", "student34@email.es"],
+            "devices": ["/dev/ttyUSB1"]
+        },
+
+        {
+            "name": "Group 3",
+            "users": ["student3@email.es", "student2@email.es"],
+            "devices": []
+        },
+
+        {
+            "name": "Group 4",
+            "users": ["student134@email.es"],
+            "devices": ["/dev/ttyUSB0", "dev/ttyUSB12", "/dev/ttyUSB1"]
+        },
+        
+        {
+            "name": "Group 5",
+            "users": [],
+            "devices": ["/dev/ttyUSB0", "dev/ttyUSB427", "/dev/ttyUSB1"]
+        }
+    ]
+}

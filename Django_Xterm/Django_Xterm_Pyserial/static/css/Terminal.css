@@ -1,0 +1,164 @@
+/* Nav Bar */
+
+.navbar-brand {
+    position: relative;
+    bottom: 8px;
+}
+
+h3#red-alert2 {
+    display: none;
+}
+
+
+/* Terminal */
+
+#Terminal {
+    height: 100%;
+    margin: 5px;
+}
+
+
+/* Modal Alert */
+
+.modal-header {
+    background-color: rgb(0 0 0 / 7%);
+}
+
+.modal-footer {
+    background-color: rgb(0 0 0 / 7%);
+}
+
+#modal-alert-content {
+    align-items: flex-start;
+    margin-top: 28px;
+}
+
+#modal-content-alert {
+    width: 85%;
+    -webkit-animation-name: animatetop;
+    -webkit-animation-duration: 0.4s;
+    animation-name: animatetop;
+    animation-duration: 0.4s
+}
+
+@-webkit-keyframes animatetop {
+    from {
+        top: -300px;
+        opacity: 0
+    }
+    to {
+        top: 0;
+        opacity: 1
+    }
+}
+
+@keyframes animatetop {
+    from {
+        top: -300px;
+        opacity: 0
+    }
+    to {
+        top: 0;
+        opacity: 1
+    }
+}
+
+#p-modal-alert {
+    margin-bottom: 0px;
+}
+
+
+/* Dark Mode */
+
+[data-theme="dark"] .modal-content {
+    border: 1px solid #444;
+}
+
+[data-theme="dark"] .modal-header {
+    border-bottom: 1px solid #444;
+    background-color: #343a40;
+}
+
+[data-theme="dark"] #cerrar-modal {
+    color: #ffffff;
+}
+
+[data-theme="dark"] .modal-body {
+    background-color: #282e34;
+}
+
+[data-theme="dark"] .modal-footer {
+    border-top: 1px solid #444;
+    background-color: #343a40;
+}
+
+
+/* Responsive */
+
+@media (max-width: 1610px) {
+    .navbar-brand {
+        bottom: 6px;
+    }
+    h1#header {
+        font-size: 30px;
+    }
+    h3#red-alert {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 1215px) {
+    .navbar-brand {
+        bottom: 3px;
+    }
+    h1#header {
+        font-size: 25px;
+    }
+    h3#red-alert {
+        font-size: 15px;
+    }
+}
+
+@media (max-width: 1000px) {
+    .navbar-brand {
+        bottom: 1px;
+    }
+    h1#header {
+        font-size: 20px;
+    }
+    h3#red-alert {
+        display: none;
+    }
+    h3#red-alert2 {
+        font-size: 15px;
+        display: contents;
+    }
+}
+
+@media (max-width: 620px) {
+    .navbar-brand {
+        bottom: 1px;
+    }
+    h1#header {
+        font-size: 18px;
+    }
+    h3#red-alert {
+        display: none;
+    }
+    h3#red-alert2 {
+        display: none;
+    }
+    #close {
+        padding-right: 6px;
+        padding-left: 6px;
+    }
+}
+
+@media (max-width: 374px) {
+    .navbar-brand {
+        margin-right: 2px;
+    }
+    h1#header {
+        font-size: 15px;
+    }
+}

@@ -1,0 +1,106 @@
+body {
+    font-size: 16px;
+    line-height: 1.8;
+    font-weight: normal;
+    background: #f8f9fd;
+}
+
+.ftco-section {
+    padding-top: 10em;
+}
+
+img {
+    width: 80px;
+    height: 80px;
+    background-position: center center;
+}
+
+.login-wrap {
+    position: relative;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0px 10px 34px -15px rgba(0, 0, 0, 0.24);
+}
+
+.login-wrap .icon {
+    margin-bottom: 20px;
+}
+
+.form-control {
+    height: 52px;
+    background: #fff;
+    color: #000;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.form-checks {
+    display: flex;
+    justify-content: space-evenly;
+    margin-bottom: 20px;
+}
+
+
+/* Colocar default input detrás del nuevo */
+
+.form-check-input {
+    position: absolute;
+    margin-top: 0.5rem;
+    margin-left: 0.1rem;
+}
+
+input[type="radio"] {
+    opacity: 0;
+}
+
+input[type="radio"]+*::before {
+    content: "";
+    display: inline-block;
+    vertical-align: bottom;
+    width: 1rem;
+    height: 1rem;
+    margin-right: 0.3rem;
+    margin-bottom: 0.3rem;
+    border-radius: 50%;
+    border-style: solid;
+    border-width: 0.1rem;
+    border-color: gray;
+}
+
+input[type="radio"]:checked+*::before {
+    background: radial-gradient(#343a40 0%, #343a40 40%, transparent 50%, transparent);
+    border-color: #343a40;
+}
+
+input[type="radio"]:checked+* {
+    color: #343a40;
+}
+
+
+/* Boton Login */
+
+.btn {
+    cursor: pointer;
+    border-radius: 40px;
+    box-shadow: none !important;
+    font-size: 15px;
+}
+
+.btn.btn-primary {
+    background: #343a40 !important;
+    color: #fff !important;
+}
+
+h2 {
+    font-size: 1.5rem;
+}
+
+
+/* Responsive */
+
+@media (max-height: 764px) {
+    .ftco-section {
+        padding-top: 6em;
+    }
+}
